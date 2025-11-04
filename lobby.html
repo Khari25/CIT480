@@ -1,0 +1,50 @@
+<script>
+  const movieList = document.getElementById("movie-list");
+  const query = localStorage.getItem("movieQuery");
+  let selectedMovies = [];
+
+  if (!query) {
+    movieList.innerHTML = "<p style='text-align:center;'>No search found. Go back and try again!</p>";
+  } else {
+    fetchMovies(query);
+  }
+
+  async function fetchMovies(query) {
+    const url = `https://www.omdbapi.com/?apikey=YOUR_API_KEY&s=${encodeURIComponent(query)}`;
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.Response === "True") renderMovies(data.Search);
+      else movieList.innerHTML = `<p style="text-align:center; color:#ccc;">No results found for "${query}".</p>`;
+    } catch (err) {
+      movieList.innerHTML = `<p style="color:red;">Error fetching data. Check your API key.</p>`;
+    }
+  }
+
+  function renderMovies(movies) {
+    movieList.innerHTML = movies.map(movie => `
+      <div class="movie-card">
+        <img src="${movie.Poster !== "N/A" ? movie.Poster : 'https://via.placeholder.com/200x300?text=No+Image'}" alt="${movie.Title}">
+        <p>${movie.Title} (${movie.Year})</p>
+        <button class="compare-btn" onclick="selectMovie('${movie.imdbID}')">Compare</button>
+      </div>
+    `).join('');
+  }
+
+  function selectMovie(id) {
+    if (selectedMovies.includes(id)) {
+      selectedMovies = selectedMovies.filter(m => m !== id);
+    } else {
+      if (selectedMovies.length >= 2) {
+        alert("You can only compare two movies at a time!");
+        return;
+      }
+      selectedMovies.push(id);
+    }
+
+    if (selectedMovies.length === 2) {
+      localStorage.setItem("compareMovies", JSON.stringify(selectedMovies));
+      window.location.href = "compare.html";
+    }
+  }
+</script>
