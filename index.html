@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MovieMatch | Discover & Compare</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="overlay"></div>
@@ -21,16 +21,25 @@
         <button id="search-btn">🔎 Search</button>
       </div>
     </section>
-
-    <section id="results" class="results-grid">
-      <!-- Dynamic movie cards appear here -->
-    </section>
   </main>
 
   <footer>
-    <p>© 2025 MovieMatch • Powered by TMDb API</p>
+    <p>© 2025 MovieMatch • Powered by OMDb API</p>
   </footer>
 
-  <script src="script.js"></script>
+  <script>
+    const searchBtn = document.getElementById("search-btn");
+    searchBtn.addEventListener("click", () => {
+      const query = document.getElementById("prompt").value.trim();
+      if (!query) {
+        alert("Please enter a description!");
+        return;
+      }
+      // Save query to localStorage
+      localStorage.setItem("movieQuery", query);
+      // Redirect to lobby
+      window.location.href = "lobby.html";
+    });
+  </script>
 </body>
 </html>
