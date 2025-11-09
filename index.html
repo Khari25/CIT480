@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MovieMatch | Discover & Compare</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <header>
+    <h1 class="logo">🎬 <span>MovieMatch</span></h1>
+    <p class="tagline">Find movies by vibe, story, or style — then compare them side-by-side.</p>
+  </header>
+
+  <main>
+    <section class="search-section">
+      <div class="search-box">
+        <input type="text" id="prompt" placeholder="Describe your ideal movie...">
+        <button id="search-btn">🔎 Search</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 MovieMatch • Powered by OMDb API</p>
+  </footer>
+
+  <script>
+    const searchBtn = document.getElementById("search-btn");
+    searchBtn.addEventListener("click", () => {
+      const query = document.getElementById("prompt").value.trim();
+      if (!query) {
+        alert("Please enter a description!");
+        return;
+      }
+      // Save query to localStorage
+      localStorage.setItem("movieQuery", query);
+      // Redirect to lobby
+      window.location.href = "lobby.html";
+    });
+  </script>
+</body>
+</html>

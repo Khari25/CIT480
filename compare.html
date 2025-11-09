@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MovieMatch | Compare</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .compare-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 2rem;
+      flex-wrap: wrap;
+      padding: 2rem;
+    }
+    .movie-compare {
+      background: var(--card, #0b1220);
+      border-radius: 1rem;
+      padding: 1rem;
+      width: 300px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+    .movie-compare img {
+      border-radius: 0.5rem;
+      width: 100%;
+      height: auto;
+    }
+    .movie-details {
+      margin-top: 1rem;
+      color: #ccc;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+    .movie-details strong {
+      color: #fff;
+    }
+    .back-btn {
+      margin: 1rem auto;
+      display: block;
+      padding: 0.5rem 1.5rem;
+      background: #ff4d6d;
+      border: none;
+      border-radius: 0.5rem;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+    .back-btn:hover {
+      background: #ff3355;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <header>
+    <h1 class="logo">🎥 <span>Compare Movies</span></h1>
+    <p class="tagline">See how your two choices stack up.</p>
+  </header>
+
+  <main>
+    <div class="compare-container" id="compare-container"></div>
+    <button class="back-btn" onclick="window.location.href='lobby.html'">← Back to Lobby</button>
+  </main>
+
+  <footer>
+    <p>© 2025 MovieMatch • Powered by OMDb API</p>
+  </footer>
+
+  <script>
+    const compareContainer = document.getElementById("compare-container");
+    const selected = JSON.parse(localStorage.getItem("compareMovies")) || [];
+
+    if (selected.length !== 2) {
+      compareContainer.innerHTML = "<p style='text-align:center;'>Please select two movies to compare.</p>";
+    } else {
+      fetchMovieDetails(selected[0]);
+      fetchMovieDetails(selected[1]);
+    }
+
+    async function fetchMovieDetails(id) {
+      const url = `https://www.omdbapi.com/?apikey=YOUR_API_KEY&i=${id}&plot=full`;
+      try {
+        const res = await fetch(url);
+        const movie = await res.json();
+        renderMovie(movie);
+      } catch (err) {
+        compareContainer.innerHTML = "<p style='color:red;'>Error loading movie data.</p>";
+      }
+    }
+
+    function renderMovie(movie) {
+      const div = document.createElement("div");
+      div.classList.add("movie-compare");
+      div.innerHTML = `
+        <img src="${movie.Poster !== "N/A" ? movie.Poster : 'https://via.placeholder.com/300x450?text=No+Image'}" alt="${movie.Title}">
+        <h2>${movie.Title} (${movie.Year})</h2>
+        <div class="movie-details">
+          <p><strong>Genre:</strong> ${movie.Genre}</p>
+          <p><strong>Director:</strong> ${movie.Director}</p>
+          <p><strong>Actors:</strong> ${movie.Actors}</p>
+          <p><strong>IMDb Rating:</strong> ⭐ ${movie.imdbRating}</p>
+          <p><strong>Plot:</strong> ${movie.Plot}</p>
+        </div>
+      `;
+      compareContainer.appendChild(div);
+    }
+  </script>
+</body>
+</html>
