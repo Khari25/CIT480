@@ -2,14 +2,20 @@
 <html lang="en">
 <head> 
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MovieMatch - Register</title>
-  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <div class="overlay"></div>
+
+  <header>
+    <h1 class="logo">🎬 <span>Create Your MovieMatch Account</span></h1>
+  </header>
+
   <div class="auth-container">
-    <h1>Create an Account</h1>
-    <form action="/register" method="post">
+    <h1>Register</h1>
+    <form id="registerForm">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" required>
 
@@ -23,8 +29,53 @@
       <input type="password" id="confirm-password" name="confirm-password" required>
 
       <button type="submit">Register</button>
+      <p id="message" style="color:red;"></p>
     </form>
+
     <p>Already have an account? <a href="login.html">Login here</a></p>
   </div>
+
+  <footer>
+    <p>© 2025 MovieMatch • Create Your Account</p>
+  </footer>
+
+  <script>
+    const registerForm = document.getElementById("registerForm");
+
+    registerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirm-password").value;
+      const messageEl = document.getElementById("message");
+
+      if (password !== confirmPassword) {
+        messageEl.textContent = "Passwords do not match!";
+        return;
+      }
+
+      try {
+        const res = await fetch("/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, email, password })
+        });
+
+        const data = await res.json();
+
+        if (data.success && data.redirect) {
+          window.location.href = data.redirect; // redirect to login page
+        } else {
+          messageEl.textContent = data.error || "Registration failed!";
+        }
+      } catch (err) {
+        console.error(err);
+        messageEl.textContent = "Server error. Try again.";
+      }
+    });
+  </script>
 </body>
 </html>
+
