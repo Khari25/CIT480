@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
+<head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MovieMatch - Login</title>
-  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 
     <div class="navbar-wireframe">
@@ -13,9 +14,15 @@
     </div>
 
 <body>
+  <div class="overlay"></div>
+
+  <header>
+    <h1 class="logo">🎬 <span>Login to MovieMatch</span></h1>
+  </header>
+
   <div class="auth-container">
-    <h1>MovieMatch Login</h1>
-    <form action="/login" method="post">
+    <h1>Login</h1>
+    <form id="loginForm">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" required>
 
@@ -23,8 +30,47 @@
       <input type="password" id="password" name="password" required>
 
       <button type="submit">Login</button>
+      <p id="message" style="color:red;"></p>
     </form>
-    <p>Don’t have an account? <a href="register.html">Register here</a></p>
+
+    <p>Don't have an account? <a href="register.html">Register here</a></p>
   </div>
+
+  <footer>
+    <p>© 2025 MovieMatch • Login</p>
+  </footer>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const messageEl = document.getElementById('message');
+
+      try {
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+
+        if (data.success && data.redirect) {
+          // Redirect to index page
+          window.location.href = data.redirect;
+        } else {
+          messageEl.textContent = data.error || "Login failed!";
+        }
+      } catch (err) {
+        console.error(err);
+        messageEl.textContent = "Server error. Try again.";
+      }
+    });
+  </script>
 </body>
 </html>
+
