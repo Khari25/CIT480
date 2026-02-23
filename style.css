@@ -134,8 +134,8 @@ header {
   justify-content: center;
   align-items: flex-start;
   gap: 2rem;
-  flex-wrap: wrap;
   padding: 2rem;
+  flex-wrap: nowrap; /* ✅ FIX: prevents vertical stacking */
 }
 
 .movie-compare {
@@ -173,6 +173,14 @@ header {
 
 .movie-details strong {
   color: #fff;
+}
+
+/* Optional: stack on small screens */
+@media (max-width: 700px) {
+  .compare-container {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 /* ---- Footer ---- */
@@ -271,116 +279,86 @@ footer {
 
 .auth-container a:hover {
   text-decoration: underline;
-} 
+}
+/* ---- Profile Avatar Styles ---- */
 
-  /* New styles specific to the profile page for alignment and layout */
-        
-        /* Main container for the profile content */
-        .profile-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 2rem;
-            flex-grow: 1; /* Allows it to take up available space between header and footer */
-        }
+.main-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #ff4d6d;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
 
-        /* Profile header section */
-        .profile-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
+.avatar-section {
+  margin-top: 2rem;
+  text-align: center;
+}
 
-        .profile-header h1 {
-            font-size: 2.5rem;
-            color: #ff4d6d;
-        }
+.avatar-grid {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
 
-        /* The main content box as seen in the wireframe */
-        .profile-content-box {
-            background: #0b1220;
-            border-radius: 1rem;
-            padding: 2rem;
-            width: 80%; /* Adjust as needed, making it wide */
-            max-width: 900px; /* Max width for large screens */
-            box-shadow: 0 0 20px rgba(255, 77, 109, 0.2);
-            display: flex;
-            gap: 2rem;
-        }
+.avatar-option {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: 0.3s ease;
+  object-fit: cover;
+}
 
-        /* Right section for saved content */
-        .saved-reviews-section {
-            flex-grow: 1;
-        }
+.avatar-option:hover {
+  transform: scale(1.1);
+  border-color: #ff4d6d;
+}
 
-        .saved-reviews-section h2 {
-            color: #ff4d6d;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
+.avatar-option.selected {
+  border-color: #ff4d6d;
+}
+/* Buttons */
+button {
+  background: #ff4d6d; /* red like profile.html buttons */
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
 
-        /* Style for an individual saved review item */
-        .saved-review-item {
-            background: #141a2e; /* Slightly different background for the item */
-            padding: 1rem;
-            border-radius: 0.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
-            font-size: 0.95rem;
-            color: #ccc;
-        }
+button:hover {
+  background: #ff637a; /* slightly lighter on hover */
+}
 
-        .delete-btn {
-            background: #ff4d6d;
-            border: none;
-            padding: 0.4rem 0.8rem;
-            border-radius: 0.5rem;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
+/* Message text */
+#message {
+  color: red;
+  margin-top: 0.5rem;
+}
 
-        .delete-btn:hover {
-            background: #ff3355;
-            transform: scale(1.05);
-        }
+/* Overlay, auth-container, profile-container, etc. can stay as-is */
+/* User avatar in header */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+}
 
-        /* Optional: Style for the "User Profile Page (Bookmarks)" text below the box */
-        .page-description {
-            margin-top: 1rem;
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #e0e0e0;
-        }
-
-        /* Small navigation bar below the main header (simulated by a div) */
-        .navbar-wireframe {
-            background: #0b1220;
-            width: 80%;
-            max-width: 1000px;
-            margin: 0 auto 3rem auto;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-            text-align: center;
-            color: #ff4d6d;
-        }
-
-        .navbar-wireframe a {
-            color: #e0e0e0;
-            text-decoration: none;
-            margin: 0 0.5rem;
-            transition: color 0.3s;
-        }
-
-        .navbar-wireframe a:hover {
-            color: #ff4d6d;
-        }
-        
-        .navbar-wireframe .current {
-            color: #ff4d6d;
-            font-weight: 600;
-        }
+.small-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #ff4d6d;
+  object-fit: cover;
+}
