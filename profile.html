@@ -1,44 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile | MovieMatch</title>
-    <link rel="stylesheet" href="style.css"> 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MovieMatch | Profile</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+  <div class="overlay"></div>
 
-    <div class="overlay"></div>
-
-    <header>
-        <div class="logo">MovieMatch</div>
-    </header>
-
-    <div class="navbar-wireframe">
-        <a href="index.html">Home</a>
-        <a href="compare.html">Compare</a>
-        <a href="profile.html" class="current">Profile</a>
+  <div class="profile-container">
+    
+    <div class="profile-header">
+      <img id="profile-avatar" 
+           src="/avatars/avatar1.png" 
+           alt="Avatar" 
+           class="main-avatar">
+      
+      <div class="profile-info">
+        <h2 id="display-name"></h2>
+        <p><strong>Username:</strong> <span id="username"></span></p>
+        <p><strong>Member Since:</strong> <span id="created-at"></span></p>
+      </div>
     </div>
 
-    <main class="profile-container">
+    <!-- Avatar Selection -->
+    <div class="avatar-section">
+      <h3>Choose Your Avatar</h3>
+      <div class="avatar-grid">
+        <img src="/avatars/avatar1.png" class="avatar-option" alt="Avatar option 1">
+        <img src="/avatars/avatar2.png" class="avatar-option" alt="Avatar option 2">
+        <img src="/avatars/avatar3.png" class="avatar-option" alt="Avatar option 3">
+        <img src="/avatars/avatar4.png" class="avatar-option" alt="Avatar option 4">
+        <img src="/avatars/avatar5.png" class="avatar-option" alt="Avatar option 5">
+        <img src="/avatars/avatar6.png" class="avatar-option" alt="Avatar option 6">
+        <img src="/avatars/avatar7.png" class="avatar-option" alt="Avatar option 7">
 
-        <div class="profile-content-box">
-            
-            <div class="profile-image-section" style="position: relative;">
-                </div>
+      </div>
+    </div>
 
-            <div class="saved-reviews-section">
-                <h2>Saved Reviews</h2>
+    <div class="actions">
+      <button id="start-matching">Start Matching Movies</button>
+      <button id="logout-btn">Logout</button>
+    </div>
 
-            </div>
-        </div>
+  </div>
 
+  <script>
+    /* ===============================
+       LOAD USER DATA
+    ================================ */
+    fetch("/me")
+      .then(res => {
+        if (!res.ok) throw new Error("Not logged in");
+        return res.json();
+      })
+      .then(user => {
+        document.getElementById("display-name").textContent = user.username;
+        document.getElementById("username").textContent = user.username;
+        document.getElementById("created-at").textContent =
+          new Date(user.created_at).toLocaleDateString();
 
-    </main>
+        if (user.avatar_url) {
+          document.getElementById("profile-avatar").src = user.avatar_url;
 
-    <footer>
-        <p>&copy; 2025 Website Title. All rights reserved.</p>
-    </footer>
+          // Highlight correct avatar
+          document.querySelectorAll(".avatar-option").forEach(option => {
+            if (option.getAttribute("src") === user.avatar_url) {
+              option.classList.add("selected");
+            }
+          });
+        }
+      })
+      .catch(() => {
+        window.location.href = "/";
+      });
+
+    /* ===============================
+       AVATAR SELECTION
+    ================================ */
+    const avatarOptions = document.querySelectorAll(".avatar-option");
+    const profileAvatar = document.getElementById("profile-avatar");
+
+    avatarOptions.forEach(option => {
+      option.addEventListener("click", async () => {
+        const selectedSrc = option.getAttribute("src");
+
+        profileAvatar.src = selectedSrc;
+
+        avatarOptions.forEach(a => a.classList.remove("selected"));
+        option.classList.add("selected");
+
+        await fetch("/update-avatar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ avatar_url: selectedSrc })
+        });
+      });
+    });
+
+    /* ===============================
+       START MATCHING
+    ================================ */
+    document.getElementById("start-matching")
+      .addEventListener("click", () => {
+        window.location.href = "/pages/index.html";
+      });
+
+    /* ===============================
+       LOGOUT
+    ================================ */
+    document.getElementById("logout-btn")
+      .addEventListener("click", async () => {
+        await fetch("/logout", { method: "POST" });
+        window.location.href = "/";
+      });
+  </script>
 
 </body>
 </html>
+
