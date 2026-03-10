@@ -2,13 +2,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===============================
      LOGIN PAGE
-  ================================ */
+  =============================== */
   const loginForm = document.getElementById("login-form");
   const messageEl = document.getElementById("message");
 
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value.trim();
 
@@ -36,18 +37,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===============================
      PROFILE PAGE
-  ================================ */
+  =============================== */
   const displayName = document.getElementById("display-name");
 
   if (displayName) {
+
     fetch("/me")
       .then(res => {
         if (!res.ok) throw new Error("Not logged in");
         return res.json();
       })
       .then(user => {
+
         displayName.textContent = user.username;
         document.getElementById("username").textContent = user.username;
+
         document.getElementById("created-at").textContent =
           new Date(user.created_at).toLocaleDateString();
 
@@ -60,22 +64,20 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           });
         }
+
       })
       .catch(() => window.location.href = "/");
 
-    document.getElementById("start-matching")
-      .addEventListener("click", () => {
+    const startBtn = document.getElementById("start-matching");
+    if (startBtn) {
+      startBtn.addEventListener("click", () => {
         window.location.href = "/pages/index.html";
       });
-
-    document.getElementById("logout-btn")
-      .addEventListener("click", async () => {
-        await fetch("/logout", { method: "POST" });
-        window.location.href = "/";
-      });
+    }
 
     document.querySelectorAll(".avatar-option").forEach(option => {
       option.addEventListener("click", async () => {
+
         const src = option.src.replace(window.location.origin, "");
 
         document.getElementById("profile-avatar").src = src;
@@ -90,17 +92,20 @@ document.addEventListener("DOMContentLoaded", () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ avatar_url: src })
         });
+
       });
     });
   }
 
   /* ===============================
      INDEX PAGE - HEADER USER INFO
-  ================================ */
+  =============================== */
+
   const userAvatar = document.getElementById("user-avatar");
   const userName = document.getElementById("user-name");
 
   if (userAvatar && userName) {
+
     fetch("/me")
       .then(res => {
         if (!res.ok) throw new Error("Not logged in");
@@ -111,15 +116,66 @@ document.addEventListener("DOMContentLoaded", () => {
         userName.textContent = user.username;
       })
       .catch(() => window.location.href = "/");
+
+  }
+
+  /* ===============================
+     SAFE MOVIE CARD BUILDER
+  =============================== */
+
+  function createMovieCard(data) {
+
+    const card = document.createElement("div");
+    card.className = "movie-compare";
+
+    const title = document.createElement("h2");
+    title.textContent = data.title;
+
+    const year = document.createElement("p");
+    year.textContent = `Year: ${data.year}`;
+
+    const imdb = document.createElement("p");
+    imdb.textContent = `IMDb: ${data.imdbRating}`;
+
+    const box = document.createElement("p");
+    box.innerHTML = "<strong>Box Office:</strong> ";
+    box.appendChild(document.createTextNode(data.boxOffice || "N/A"));
+
+    const img = document.createElement("img");
+    img.src = data.poster;
+    img.alt = data.title;
+
+    const details = document.createElement("div");
+    details.className = "movie-details";
+
+    const genre = document.createElement("p");
+    genre.textContent = `Genre: ${data.genre}`;
+
+    const director = document.createElement("p");
+    director.textContent = `Director: ${data.director}`;
+
+    const actors = document.createElement("p");
+    actors.textContent = `Actors: ${data.actor}`;
+
+    const plot = document.createElement("p");
+    plot.textContent = `Plot: ${data.plot}`;
+
+    details.append(genre, director, actors, plot);
+
+    card.append(title, year, imdb, box, img, details);
+
+    return card;
   }
 
   /* ===============================
      INDEX PAGE - COMPARE MOVIES
-  ================================ */
+  =============================== */
+
   const compareBtn = document.getElementById("compare-btn");
   const resultsDiv = document.getElementById("results");
 
   if (compareBtn && resultsDiv) {
+
     compareBtn.addEventListener("click", async () => {
 
       const movie1 = document.getElementById("movie1").value.trim();
@@ -131,6 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
+
         const [res1, res2] = await Promise.all([
           fetch(`/movie/${encodeURIComponent(movie1)}`),
           fetch(`/movie/${encodeURIComponent(movie2)}`)
@@ -142,52 +199,28 @@ document.addEventListener("DOMContentLoaded", () => {
         ]);
 
         if (data1.error || data2.error) {
-          resultsDiv.innerHTML =
-            `<p style="color:red;">One or both movies not found.</p>`;
+          resultsDiv.textContent = "One or both movies not found.";
           return;
         }
 
-        resultsDiv.innerHTML = `
-          <div class="movie-compare">
-            <h2>${data1.title}</h2>
-            <p>Year: ${data1.year}</p>
-            <p>IMDb: ${data1.imdbRating}</p>
-            <p><strong>Box Office:</strong> ${data1.boxOffice || "N/A"}</p>
-            <img src="${data1.poster}" alt="${data1.title}" />
-            <div class="movie-details">
-              <p><strong>Genre:</strong> ${data1.genre}</p>
-              <p><strong>Director:</strong> ${data1.director}</p>
-              <p><strong>Actors:</strong> ${data1.actor}</p>
-              <p><strong>Plot:</strong> ${data1.plot}</p>
-            </div>
-          </div>
+        resultsDiv.innerHTML = "";
 
-          <div class="movie-compare">
-            <h2>${data2.title}</h2>
-            <p>Year: ${data2.year}</p>
-            <p>IMDb: ${data2.imdbRating}</p>
-            <p><strong>Box Office:</strong> ${data2.boxOffice || "N/A"}</p>
-            <img src="${data2.poster}" alt="${data2.title}" />
-            <div class="movie-details">
-              <p><strong>Genre:</strong> ${data2.genre}</p>
-              <p><strong>Director:</strong> ${data2.director}</p>
-              <p><strong>Actors:</strong> ${data2.actor}</p>
-              <p><strong>Plot:</strong> ${data2.plot}</p>
-            </div>
-          </div>
-        `;
+        resultsDiv.appendChild(createMovieCard(data1));
+        resultsDiv.appendChild(createMovieCard(data2));
 
       } catch (err) {
         console.error(err);
-        resultsDiv.innerHTML =
-          `<p style="color:red;">Error fetching movies. Try again!</p>`;
+        resultsDiv.textContent = "Error fetching movies. Try again!";
       }
+
     });
+
   }
 
   /* ===============================
-     LOGOUT BUTTON (GLOBAL)
-  ================================ */
+     GLOBAL LOGOUT BUTTON
+  =============================== */
+
   const logoutBtn = document.getElementById("logout-btn");
 
   if (logoutBtn) {
@@ -198,4 +231,3 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
-
